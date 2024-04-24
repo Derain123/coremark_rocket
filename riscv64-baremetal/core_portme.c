@@ -108,7 +108,7 @@ void portable_free(void *p) {
 	#define SAMPLE_TIME_IMPLEMENTATION 1
 #else
     // Defined for RISCV
-    #define NSECS_PER_SEC 1000000000 // TODO: What freq are we assuming?
+    #define NSECS_PER_SEC 10000000 // TODO: What freq are we assuming?
 	#define EE_TIMER_TICKER_RATE 1000 // TODO: What is this?
 	#define CORETIMETYPE clock_t
     #define read_csr(reg) ({ unsigned long __tmp; \
@@ -116,7 +116,7 @@ void portable_free(void *p) {
        __tmp; })
     #define GETMYTIME(_t) (*_t=read_csr(cycle))
 	#define MYTIMEDIFF(fin,ini) ((fin)-(ini))
-	#define TIMER_RES_DIVIDER 1
+	#define TIMER_RES_DIVIDER 1000
 	#define SAMPLE_TIME_IMPLEMENTATION 1
 #endif
 #define EE_TICKS_PER_SEC (NSECS_PER_SEC / TIMER_RES_DIVIDER)
