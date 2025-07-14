@@ -33,9 +33,19 @@ coremark_att/
 cd coremark/
 make PORT_DIR=../riscv64-baremetal compile
 
+# Convert to big-endian hex for P2E platform backdoor DDR
+python3 hex_to_readmemh.py ./coremark/coremark.bare.riscv cm_bigendianv3.hex --big-endian --remap-to-zero
+
 # Clean
 make PORT_DIR=../riscv64-baremetal clean
 ```
+
+## P2E Platform Support
+The P2E platform backdoor DDR requires big-endian hex files. 
+e.g., Use the conversion script:
+- Input: `coremark.bare.riscv` 
+- Output: `cm_bigendian.hex`  
+- flags: `--big-endian --remap-to-zero`
 
 ## UART Baud Rate Configuration
 Modify UART initialization in `riscv64-baremetal/syscalls.c`:
@@ -51,12 +61,12 @@ uart_init_38400();    // 38400 baud
 uart_init_57600();    // 57600 baud
 ```
 
-## Technical Specifications
+## Specifications
 - **Architecture**: RISC-V 64-bit
-- **UART Base**: 0x64000000 (SiFive UART)
-- **Clock Frequency**: 100MHz (for baud rate calculation)
+- **UART Base**: 0x64000000 
+- **Clock Frequency**: 100MHz 
 - **Optimization**: -O2
-- **Output**: `coremark.bare.riscv` (~24KB ELF)
+- **Output**: `coremark.bare.riscv` 
 
 ## Program Flow
 1. Initialize UART with configured baud rate
@@ -70,8 +80,4 @@ uart_init_57600();    // 57600 baud
 Divisor = Clock_Frequency / Baud_Rate
         = 100,000,000 / Baud_Rate
 
-Examples:
-- 115200 baud: divisor = 869
-- 9600 baud:   divisor = 10417
-- 38400 baud:  divisor = 2604
 ``` 
