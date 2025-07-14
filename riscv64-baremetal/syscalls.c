@@ -11,7 +11,8 @@
 #include "util.h"
 #include "kprintf.h"
 #include "common.h"
-#include <platform.h>
+#include "include/platform.h"
+#include "include/uart_config.h"  // 新增：UART波特率配置
 
 #undef strcmp
 
@@ -95,10 +96,15 @@ static void init_tls()
 
 void _init(int cid, int nc)
 {
-  // 初始化UART用于kprintf
-  REG32(uart, UART_REG_TXCTRL) = UART_TXEN;
+  // Original UART initialization code (unchanged)
+  // REG32(uart, UART_REG_TXCTRL) = UART_TXEN;
   
-  // 输出启动信息
+  // configure a specific baud rate
+  // uart_init_115200();  // 115200 baud rate
+  // uart_init_9600();    // 9600 baud rate  
+  // uart_init_38400();   // 38400 baud rate
+  
+  // Output startup information
   kputs("=== COREMARK WITH KPRINTF LIBRARY ===");
   kputs("Initializing...");
 
@@ -119,7 +125,7 @@ void _init(int cid, int nc)
   exit(ret);
 }
 
-// 使用kprintf实现putchar
+// Use kprintf to implement putchar
 #undef putchar
 int putchar(int ch)
 {
@@ -132,7 +138,7 @@ void printhex(uint64_t x)
   kprintf("0x%lx", x);
 }
 
-// 辅助函数用于sprintf实现
+// Auxiliary function for sprintf implementation
 static void sprintf_putch(int ch, void** data)
 {
   char** pstr = (char**)data;
@@ -333,7 +339,7 @@ static void vprintfmt(void (*putch)(int, void**), void **putdat, const char *fmt
   }
 }
 
-// 保留printf实现，但使用我们的putchar
+// Keep printf implementation, but use our putchar
 int printf(const char* fmt, ...)
 {
   va_list ap;
@@ -364,7 +370,7 @@ int sprintf(char* str, const char* fmt, ...)
   return str - str0;
 }
 
-// 保留内存管理函数
+// Keep memory management functions
 void* memcpy(void* dest, const void* src, size_t len)
 {
   if ((((uintptr_t)dest | (uintptr_t)src | len) & (sizeof(uintptr_t)-1)) == 0) {
